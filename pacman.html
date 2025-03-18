@@ -84,69 +84,6 @@ let powerPelletPulseDirection = 1; // Controla si crecen o se reducen
 const powerPelletDuration = 8000; // Duración en milisegundos (8 segundos)
 let pacmanPowerMode = false;
 let powerTimeout;
-	let touchStartX = 0, touchStartY = 0;
-let touchThreshold = 30; // 📏 Distancia mínima para considerar un swipe
-
-document.addEventListener("touchstart", function(event) {
-    touchStartX = event.touches[0].clientX;
-    touchStartY = event.touches[0].clientY;
-}, false);
-
-document.addEventListener("touchend", function(event) {
-    let touchEndX = event.changedTouches[0].clientX;
-    let touchEndY = event.changedTouches[0].clientY;
-
-    let deltaX = touchEndX - touchStartX;
-    let deltaY = touchEndY - touchStartY;
-
-    // 📌 Determinar si el swipe es más horizontal o vertical
-    if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        // 🔄 Movimiento horizontal
-        if (deltaX > touchThreshold) {
-            movePacmangesture({ key: "ArrowRight" });
-        } else if (deltaX < -touchThreshold) {
-            movePacmangesture({ key: "ArrowLeft" });
-        }
-    } else {
-        // 🔼🔽 Movimiento vertical
-        if (deltaY > touchThreshold) {
-            movePacmangesture({ key: "ArrowDown" });
-        } else if (deltaY < -touchThreshold) {
-            movePacmangesture({ key: "ArrowUp" });
-        }
-    }
-}, false);
-function movePacmangesture(event) {
-    if (!gameStarted) {
-        gameStarted = true; // 🟢 Activar el juego cuando Pac-Man se mueve
-        gameLoop(); // Iniciar el bucle del juego
-    }
-
-    const moves = { 
-        "ArrowUp": [0, -1], 
-        "ArrowDown": [0, 1], 
-        "ArrowLeft": [-1, 0], 
-        "ArrowRight": [1, 0]
-    };
-
-    let key = event.key || event; // 📌 Soporta eventos de teclado y gestos táctiles
-
-    if (moves[key]) { // 🟢 Si la tecla/gesto es válida
-        let move = moves[key];
-        let newX = pacman.x + move[0];
-        let newY = pacman.y + move[1];
-
-        if (newX >= 0 && newX < cols && newY >= 0 && newY < rows && maze[newY][newX] === 0) {
-            pacman.x = newX;
-            pacman.y = newY;
-            pacman.direction = key;
-            pellets.delete(`${newY}-${newX}`);
-            score += 10;
-            document.getElementById("score").innerText = `Score: ${score}`;
-        }
-    }
-}
-
       function generateNewLevel() {
     generateMaze(); // Generar un nuevo laberinto aleatorio
     
@@ -195,6 +132,87 @@ function checkCollisions() {
             ghost.color = ghost.originalColor; // Recuperar su color original
         }
     });
+}
+let pacmanDirection = "ArrowRight"; 
+let touchStartX = 0, touchStartY = 0;
+let touchThreshold = 30; // 📏 Distancia mínima para considerar un swipe
+
+document.addEventListener("touchstart", function(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+}, false);
+
+document.addEventListener("touchend", function(event) {
+    let touchEndX = event.changedTouches[0].clientX;
+    let touchEndY = event.changedTouches[0].clientY;
+
+    let deltaX = touchEndX - touchStartX;
+    let deltaY = touchEndY - touchStartY;
+
+    // 📌 Determinar si el swipe es más horizontal o vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // 🔄 Movimiento horizontal
+        if (deltaX > touchThreshold) {
+            movePacmangesture({ key: "ArrowRight" });
+        } else if (deltaX < -touchThreshold) {
+            movePacmangesture({ key: "ArrowLeft" });
+        }
+    } else {
+        // 🔼🔽 Movimiento vertical
+        if (deltaY > touchThreshold) {
+            movePacmangesture({ key: "ArrowDown" });
+        } else if (deltaY < -touchThreshold) {
+            movePacmangesture({ key: "ArrowUp" });
+        }
+    }
+}, false);
+let isgesture=false;
+function movePacmangesture(event) {
+    if (!gameStarted) {
+        gameStarted = true; // 🟢 Activar el juego cuando Pac-Man se mueve
+       
+    }
+isgesture=true;
+		  
+    const moves = { 
+        "ArrowUp": [0, -1], 
+        "ArrowDown": [0, 1], 
+        "ArrowLeft": [-1, 0], 
+        "ArrowRight": [1, 0]
+    };
+
+    let key = event.key || event; // 📌 Soporta eventos de teclado y gestos táctiles
+
+    if (moves[key]) { // 🟢 Si la tecla/gesto es válida
+       pacmanDirection = key; // 🔄 Actualiza la dirección de Pac-Man
+    
+    }
+}
+function movePacmanAuto() {
+if (isgesture)
+{
+    const moves = { 
+        "ArrowUp": [0, -1], 
+        "ArrowDown": [0, 1], 
+        "ArrowLeft": [-1, 0], 
+        "ArrowRight": [1, 0]
+    };
+
+    let move = moves[pacmanDirection];
+
+    if (move) {
+        let newX = pacman.x + move[0];
+        let newY = pacman.y + move[1];
+
+        if (newX >= 0 && newX < cols && newY >= 0 && newY < rows && maze[newY][newX] === 0) {
+            pacman.x = newX;
+            pacman.y = newY;
+            pellets.delete(`${newY}-${newX}`);
+            score += 10;
+            document.getElementById("score").innerText = `Score: ${score}`;
+        }
+    }
+	}
 }
 function animatePacmanDeath() {
   gameStarted = false; 
@@ -882,6 +900,7 @@ if (score - lastLifeBonus >= 100000) { // 🎉 Si se alcanzan 100,000 puntos má
 }
     checkCollisions(); // Verificar colisiones con los fantasmas
     updateGame(); // Actualizar el juego
+	movePacmanAuto(); 
          checkLevelCompletion();
 }
       function updateLives() {
