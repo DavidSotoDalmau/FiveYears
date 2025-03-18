@@ -103,19 +103,49 @@ document.addEventListener("touchend", function(event) {
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // 🔄 Movimiento horizontal
         if (deltaX > touchThreshold) {
-            movePacman({ key: "ArrowRight" });
+            movePacmangesture({ key: "ArrowRight" });
         } else if (deltaX < -touchThreshold) {
-            movePacman({ key: "ArrowLeft" });
+            movePacmangesture({ key: "ArrowLeft" });
         }
     } else {
         // 🔼🔽 Movimiento vertical
         if (deltaY > touchThreshold) {
-            movePacman({ key: "ArrowDown" });
+            movePacmangesture({ key: "ArrowDown" });
         } else if (deltaY < -touchThreshold) {
-            movePacman({ key: "ArrowUp" });
+            movePacmangesture({ key: "ArrowUp" });
         }
     }
 }, false);
+function movePacmangesture(event) {
+    if (!gameStarted) {
+        gameStarted = true; // 🟢 Activar el juego cuando Pac-Man se mueve
+        gameLoop(); // Iniciar el bucle del juego
+    }
+
+    const moves = { 
+        "ArrowUp": [0, -1], 
+        "ArrowDown": [0, 1], 
+        "ArrowLeft": [-1, 0], 
+        "ArrowRight": [1, 0]
+    };
+
+    let key = event.key || event; // 📌 Soporta eventos de teclado y gestos táctiles
+
+    if (moves[key]) { // 🟢 Si la tecla/gesto es válida
+        let move = moves[key];
+        let newX = pacman.x + move[0];
+        let newY = pacman.y + move[1];
+
+        if (newX >= 0 && newX < cols && newY >= 0 && newY < rows && maze[newY][newX] === 0) {
+            pacman.x = newX;
+            pacman.y = newY;
+            pacman.direction = key;
+            pellets.delete(`${newY}-${newX}`);
+            score += 10;
+            document.getElementById("score").innerText = `Score: ${score}`;
+        }
+    }
+}
 
       function generateNewLevel() {
     generateMaze(); // Generar un nuevo laberinto aleatorio
