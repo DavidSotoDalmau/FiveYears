@@ -41,7 +41,7 @@ Este proyecto consiste en una sala recreativa en línea donde los usuarios puede
 ## Instalación y Uso
 1. Clona este repositorio en tu máquina local:
    ```sh
-   git clone https://github.com/tu-usuario/sala-recreativa.git
+   git clone https://github.com/DavidSotoDalmau/FiveYears.git
    ```
 2. Abre `index.html` en un navegador web.
 3. Haz clic en una máquina para cargar el juego.
