@@ -84,6 +84,33 @@ let powerPelletPulseDirection = 1; // Controla si crecen o se reducen
 const powerPelletDuration = 8000; // Duración en milisegundos (8 segundos)
 let pacmanPowerMode = false;
 let powerTimeout;
+	    let touchStartX = 0, touchStartY = 0;
+let touchEndX = 0, touchEndY = 0;
+
+document.addEventListener("touchstart", function(event) {
+    touchStartX = event.touches[0].clientX;
+    touchStartY = event.touches[0].clientY;
+}, false);
+
+document.addEventListener("touchend", function(event) {
+    touchEndX = event.changedTouches[0].clientX;
+    touchEndY = event.changedTouches[0].clientY;
+    handleGesture(); // 📌 Llamar a la función que decide la dirección
+}, false);
+function handleGesture() {
+    let deltaX = touchEndX - touchStartX;
+    let deltaY = touchEndY - touchStartY;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        // 📌 Movimiento horizontal (izquierda o derecha)
+        if (deltaX > 30) movePacman({ key: "ArrowRight" });
+        else if (deltaX < -30) movePacman({ key: "ArrowLeft" });
+    } else {
+        // 📌 Movimiento vertical (arriba o abajo)
+        if (deltaY > 30) movePacman({ key: "ArrowDown" });
+        else if (deltaY < -30) movePacman({ key: "ArrowUp" });
+    }
+}
       function generateNewLevel() {
     generateMaze(); // Generar un nuevo laberinto aleatorio
     
